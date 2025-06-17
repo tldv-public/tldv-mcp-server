@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/tldv-public-tldv-mcp-server-badge.png)](https://mseep.ai/app/tldv-public-tldv-mcp-server)
+
 # Official MCP Server for tl;dv API
 
 🚀 **The First and Only MCP Server for Google Meet, Zoom, and Microsoft Teams Integration**
