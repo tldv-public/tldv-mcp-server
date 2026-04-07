@@ -1,5 +1,6 @@
 import {
   GetHighlightsResponse,
+  GetMeetingNotesResponse,
   GetMeetingsParams,
   GetMeetingsParamsSchema,
   GetMeetingsResponse,
@@ -212,6 +213,16 @@ export class TldvApi {
    */
   async getHighlights(meetingId: string): Promise<TldvResponse<GetHighlightsResponse>> {
     return this.request<GetHighlightsResponse>(`/meetings/${meetingId}/highlights`);
+  }
+
+  /**
+   * Retrieves AI-generated notes for a specific meeting
+   *
+   * @param meetingId - The unique identifier of the meeting
+   * @returns A promise that resolves to the meeting notes
+   */
+  async getMeetingNotes(meetingId: string): Promise<TldvResponse<GetMeetingNotesResponse>> {
+    return this.request<GetMeetingNotesResponse>(`/meetings/${meetingId}/notes`);
   }
 
   /**

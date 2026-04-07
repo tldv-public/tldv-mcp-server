@@ -151,6 +151,41 @@ export const GetMeetingsResponseSchema = z.object({
 export type GetMeetingsResponse = z.infer<typeof GetMeetingsResponseSchema>;
 
 /**
+ * Structured note segment schema
+ */
+export const StructuredNoteSchema = z.object({
+  segmentId: z.string(),
+  timestamp: z.number().optional(),
+  text: z.string(),
+  topicId: z.string().optional(),
+});
+
+export type StructuredNote = z.infer<typeof StructuredNoteSchema>;
+
+/**
+ * Note topic schema
+ */
+export const NoteTopicSchema = z.object({
+  id: z.string(),
+  order: z.number().optional(),
+  title: z.string(),
+  summary: z.string(),
+});
+
+export type NoteTopic = z.infer<typeof NoteTopicSchema>;
+
+/**
+ * Meeting notes response schema
+ */
+export const GetMeetingNotesResponseSchema = z.object({
+  structuredNotes: z.array(StructuredNoteSchema).optional().default([]),
+  topics: z.array(NoteTopicSchema).optional().default([]),
+  markdownContent: z.string().optional(),
+});
+
+export type GetMeetingNotesResponse = z.infer<typeof GetMeetingNotesResponseSchema>;
+
+/**
  * Health check response schema
  */
 export const HealthResponseSchema = z.object({

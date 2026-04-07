@@ -1,9 +1,14 @@
 {
-    "name": "tldv-mcp",
+    "name": "@numbnp/tldv-mcp",
     "version": "1.0.0",
     "description": "TLDR API MCP Server",
     "main": "dist/index.js",
-    "types": "dist/index.d.ts",
+    "bin": {
+        "tldv-mcp": "dist/index.js"
+    },
+    "files": [
+        "dist"
+    ],
     "scripts": {
         "start": "node dist/index.js",
         "dev": "ts-node-dev --respawn --transpile-only src/index.ts",

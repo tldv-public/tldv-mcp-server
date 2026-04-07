@@ -10,6 +10,7 @@ This project provides a Model Context Protocol (MCP) server enabling seamless in
 *   **Get Meeting Metadata:** Fetch detailed information for a specific meeting by ID, regardless of the platform it was hosted on.
 *   **Get Transcript:** Obtain the transcript for any meeting ID, with consistent formatting across all platforms.
 *   **Get Highlights:** Retrieve AI-generated highlights for meetings from any supported platform.
+*   **Get Meeting Notes:** Fetch AI-generated, template-driven notes for a meeting, including topics, summaries, and full markdown content.
 *   **Import Meeting (Coming Soon):** Functionality to import meetings via URL from any supported platform.
 
 ## Prerequisites
@@ -22,6 +23,26 @@ This project provides a Model Context Protocol (MCP) server enabling seamless in
 ## Installation and Configuration
 
 You can run this MCP server using either Docker or Node.js. Configure your MCP client (e.g., Claude Desktop, Cursor) to connect to the server.
+
+### Using npx (recommended)
+
+No installation required. Configure your MCP client:
+
+```json
+{
+  "mcpServers": {
+    "tldv": {
+      "command": "npx",
+      "args": ["-y", "@numbnp/tldv-mcp"],
+      "env": {
+        "TLDV_API_KEY": "your_tldv_api_key"
+      }
+    }
+  }
+}
+```
+
+Replace `your_tldv_api_key` with your tl;dv API key.
 
 ### Using Docker
 

@@ -37,6 +37,11 @@ async function main() {
       description: "Allows you to get highlights from a meeting by providing a meeting ID.",
       inputSchema: z.object({ meetingId: z.string() }),
     },
+    "get-meeting-notes": {
+      name: "get-meeting-notes",
+      description: "Get AI-generated, template-driven notes for a meeting by its ID. Returns structured notes with topics, summaries, and full markdown content produced by the tl;dv template configured for that meeting.",
+      inputSchema: z.object({ meetingId: z.string() }),
+    },
   };
   
   const server = new McpServer({
@@ -99,6 +104,18 @@ async function main() {
       const highlights = await tldvApi.getHighlights(meetingId);
       return {
         content: [{ type: "text", text: JSON.stringify(highlights) }]
+      };
+    }
+  );
+
+  server.tool(
+    tools["get-meeting-notes"].name,
+    tools["get-meeting-notes"].description,
+    tools["get-meeting-notes"].inputSchema.shape,
+    async ({ meetingId }) => {
+      const notes = await tldvApi.getMeetingNotes(meetingId);
+      return {
+        content: [{ type: "text", text: JSON.stringify(notes) }]
       };
     }
   );
