@@ -37,6 +37,11 @@ async function main() {
       description: "Allows you to get highlights from a meeting by providing a meeting ID.",
       inputSchema: z.object({ meetingId: z.string() }),
     },
+    "get-recording-download-url": {
+      name: "get-recording-download-url",
+      description: "Get a download URL for the video recording (MP4) of a meeting by providing a meeting ID. The URL is signed and expires about 6 hours after it is issued (see expiresAt). Use it to download the file with a browser, curl, or any HTTP client. Request a new URL if the previous one has expired.",
+      inputSchema: z.object({ meetingId: z.string() }),
+    },
   };
   
   const server = new McpServer({
@@ -99,6 +104,18 @@ async function main() {
       const highlights = await tldvApi.getHighlights(meetingId);
       return {
         content: [{ type: "text", text: JSON.stringify(highlights) }]
+      };
+    }
+  );
+
+  server.tool(
+    tools["get-recording-download-url"].name,
+    tools["get-recording-download-url"].description,
+    tools["get-recording-download-url"].inputSchema.shape,
+    async ({ meetingId }) => {
+      const downloadUrl = await tldvApi.getRecordingDownloadUrl(meetingId);
+      return {
+        content: [{ type: "text", text: JSON.stringify(downloadUrl) }]
       };
     }
   );

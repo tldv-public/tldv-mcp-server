@@ -10,6 +10,7 @@ This project provides a Model Context Protocol (MCP) server enabling seamless in
 *   **Get Meeting Metadata:** Fetch detailed information for a specific meeting by ID, regardless of the platform it was hosted on.
 *   **Get Transcript:** Obtain the transcript for any meeting ID, with consistent formatting across all platforms.
 *   **Get Highlights:** Retrieve AI-generated highlights for meetings from any supported platform.
+*   **Get Recording Download URL:** Get a signed, expiring (about 6 hours) download URL for the MP4 recording of a meeting.
 *   **Import Meeting (Coming Soon):** Functionality to import meetings via URL from any supported platform.
 
 ## Prerequisites
