@@ -107,6 +107,17 @@ export const GetHighlightsResponseSchema = z.object({
 export type GetHighlightsResponse = z.infer<typeof GetHighlightsResponseSchema>;
 
 /**
+ * Recording download URL response schema
+ */
+export const GetRecordingDownloadUrlResponseSchema = z.object({
+  meetingId: z.string(), // the meeting the recording belongs to
+  downloadUrl: z.string().url(), // signed URL of the recording file (MP4)
+  expiresAt: z.string().datetime().optional(), // when the signed URL stops working (about 6 hours after issuance)
+});
+
+export type GetRecordingDownloadUrlResponse = z.infer<typeof GetRecordingDownloadUrlResponseSchema>;
+
+/**
  * Import meeting response schema
  */
 export const ImportMeetingResponseSchema = z.object({

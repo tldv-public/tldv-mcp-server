@@ -3,6 +3,7 @@ import {
   GetMeetingsParams,
   GetMeetingsParamsSchema,
   GetMeetingsResponse,
+  GetRecordingDownloadUrlResponse,
   GetTranscriptResponse,
   HealthResponse,
   Meeting,
@@ -212,6 +213,95 @@ export class TldvApi {
    */
   async getHighlights(meetingId: string): Promise<TldvResponse<GetHighlightsResponse>> {
     return this.request<GetHighlightsResponse>(`/meetings/${meetingId}/highlights`);
+  }
+
+  /**
+   * Retrieves a signed, expiring download URL for the recording of a meeting
+   *
+   * The `/meetings/{id}/download` endpoint answers with an HTTP 302 redirect whose
+   * `Location` header is the signed URL of the recording file. This method does not
+   * follow the redirect (that would start downloading the whole file) and returns the
+   * URL instead. The signed URL expires about 6 hours after it is issued.
+   *
+   * @param meetingId - The unique identifier of the meeting
+   * @returns A promise that resolves to the signed download URL and its expiry
+   *
+   * @example
+   * ```typescript
+   * const { data } = await api.getRecordingDownloadUrl('meeting-123');
+   * // data.downloadUrl -> https://.../download.mp4?t=...
+   * // data.expiresAt   -> 2026-01-01T12:00:00.000Z
+   * ```
+   */
+  async getRecordingDownloadUrl(meetingId: string): Promise<TldvResponse<GetRecordingDownloadUrlResponse>> {
+    const endpoint = `/meetings/${meetingId}/download`;
+    this.logger.debug(`API Request: ${endpoint}`);
+
+    try {
+      const response = await axios.get(`${this.baseUrl}${endpoint}`, {
+        headers: {
+          ...this.headers,
+        },
+        // Do not follow the redirect: the Location header is the answer we want.
+        maxRedirects: 0,
+        validateStatus: (status) => status >= 300 && status < 400,
+      });
+
+      const downloadUrl = response.headers['location'];
+      if (typeof downloadUrl !== 'string' || downloadUrl.length === 0) {
+        throw new Error('Download endpoint did not return a Location header');
+      }
+
+      return {
+        data: {
+          meetingId,
+          downloadUrl,
+          expiresAt: this.getSignedUrlExpiry(downloadUrl),
+        },
+        error: undefined,
+      };
+    } catch (error) {
+      let errorMessage = 'Unknown error occurred';
+      if (axios.isAxiosError(error) && error.response) {
+        const body = error.response.data;
+        errorMessage =
+          (body && typeof body === 'object' && typeof body.message === 'string' && body.message) ||
+          `API request failed with status ${error.response.status}`;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      this.logger.error(`API request failed: ${endpoint}`, { error: errorMessage });
+
+      return {
+        data: null as unknown as GetRecordingDownloadUrlResponse,
+        error: errorMessage,
+      };
+    }
+  }
+
+  /**
+   * Reads the expiry of a signed download URL.
+   *
+   * The signed URL carries a JWT in its `t` query parameter. Its `exp` claim is the
+   * expiry as a unix timestamp in seconds. Returns undefined when the URL has no
+   * readable expiry, so callers can fall back to the documented 6 hour lifetime.
+   */
+  private getSignedUrlExpiry(downloadUrl: string): string | undefined {
+    try {
+      const token = new URL(downloadUrl).searchParams.get('t');
+      if (!token) return undefined;
+
+      const [, payload] = token.split('.');
+      if (!payload) return undefined;
+
+      const claims = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
+      if (typeof claims.exp !== 'number') return undefined;
+
+      return new Date(claims.exp * 1000).toISOString();
+    } catch {
+      return undefined;
+    }
   }
 
   /**

@@ -58,6 +58,12 @@ export interface GetHighlightsResponse {
   data: Highlight[];
 }
 
+export interface GetRecordingDownloadUrlResponse {
+  meetingId: string;
+  downloadUrl: string;
+  expiresAt?: string;
+}
+
 export interface ImportMeetingParams {
   name: string;
   url: string;
